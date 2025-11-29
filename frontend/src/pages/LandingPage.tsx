@@ -30,11 +30,17 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ThemeToggle';
 
+import { useCurveTransition } from '../components/ui/CurveTransition';
+
 export default function LandingPage() {
     const navigate = useNavigate();
+    const { triggerTransition } = useCurveTransition();
 
     const handleNavigate = (mode: 'LOGIN' | 'SIGNUP', role?: 'RESTAURANT' | 'NGO') => {
-        navigate('/auth', { state: { initialMode: mode, initialRole: role } });
+        const label = role ? (role === 'RESTAURANT' ? "Restaurant" : "NGO") : "Get Started";
+        triggerTransition(() => {
+            navigate('/auth', { state: { initialMode: mode, initialRole: role } });
+        }, label);
     };
 
     return (
