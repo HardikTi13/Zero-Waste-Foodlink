@@ -7,15 +7,27 @@ export type AiAnalysis = {
     notesForNGO: string;
 };
 
+export type Location = {
+    type: "Point";
+    coordinates: [number, number];
+};
+
 export type Donation = {
-    id: string;
-    restaurantName?: string; // For NGO view
-    ngoName?: string; // For Restaurant view
-    foodType?: string; // For Restaurant view (or unified)
-    quantityMeals?: number; // For Restaurant view
-    aiAnalysis?: AiAnalysis; // For NGO view
+    _id: string; // Backend ID
+    id: string; // Frontend alias for _id
+    restaurantName?: string;
+    ngoName?: string;
+    foodName: string; // Backend field
+    foodType?: string; // Frontend alias for foodName
+    description?: string; // Backend field
+    quantity: string; // Backend field (e.g. "1 large pizza")
+    quantityMeals?: number; // Derived or separate
+    aiAnalysis?: AiAnalysis;
     status: DonationStatus;
     createdAt: string;
+    expiresAt?: string; // Backend field
+    isClaimed?: boolean; // Backend field
+    location?: Location; // Backend field
     impact?: {
         co2SavedKg: number;
     };

@@ -20,7 +20,7 @@ export default function CreateDonationModal({ isOpen, onClose, onCreate }: Creat
     const [formData, setFormData] = useState({
         foodType: '',
         quantity: '',
-        freshness: 'Good for 24 hours',
+        freshness: '',
         notes: '',
         image: null as string | null
     });
@@ -44,14 +44,19 @@ export default function CreateDonationModal({ isOpen, onClose, onCreate }: Creat
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         const newDonation: Donation = {
+            _id: `d${Date.now()}`,
             id: `d${Date.now()}`,
             ngoName: "Pending Assignment",
+            foodName: formData.foodType,
             foodType: formData.foodType,
+            quantity: `${formData.quantity} meals`,
             quantityMeals: parseInt(formData.quantity) || 0,
             status: "PENDING_NGO_CONFIRMATION",
             createdAt: new Date().toISOString(),
+            expiresAt: new Date(Date.now() + 24 * 3600000).toISOString(), // Default 24h
             impact: { co2SavedKg: (parseInt(formData.quantity) || 0) * 0.5 },
-            imageUrl: formData.image || undefined
+            imageUrl: formData.image || undefined,
+            location: { type: "Point", coordinates: [0, 0] } // Placeholder
         };
 
         onCreate(newDonation);
@@ -145,17 +150,14 @@ export default function CreateDonationModal({ isOpen, onClose, onCreate }: Creat
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-stone-700 dark:text-stone-300">Freshness</label>
-                                    <select
+                                    <label className="text-sm font-medium text-stone-700 dark:text-stone-300">Freshness (AI Estimated)</label>
+                                    <input
+                                        type="text"
                                         value={formData.freshness}
                                         onChange={e => setFormData({ ...formData, freshness: e.target.value })}
-                                        className="w-full bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all appearance-none"
-                                    >
-                                        <option>Good for 2 hours</option>
-                                        <option>Good for 4 hours</option>
-                                        <option>Good for 12 hours</option>
-                                        <option>Good for 24 hours</option>
-                                    </select>
+                                        placeholder="AI will estimate freshness..."
+                                        className="w-full bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all placeholder:text-stone-400 dark:placeholder:text-stone-500"
+                                    />
                                 </div>
                             </div>
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Plus,
     Utensils,
@@ -7,7 +8,9 @@ import {
     Clock,
     MoreVertical,
     Calendar,
+    RefreshCw
 } from 'lucide-react';
+import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { type Donation, type Stats } from '../../types/donation';
 import { StatusBadge } from '../../components/StatusBadge';
@@ -25,56 +28,81 @@ const mockStats: Stats = {
 
 const mockDonations: Donation[] = [
     {
+        _id: "d1",
         id: "d1",
         ngoName: "Hope Foundation",
+        foodName: "Curry & Rice",
         foodType: "Curry & Rice",
+        quantity: "20 meals",
         quantityMeals: 20,
         status: "PENDING_NGO_CONFIRMATION",
         createdAt: new Date().toISOString(),
-        impact: { co2SavedKg: 8.5 }
+        expiresAt: new Date(Date.now() + 4 * 3600000).toISOString(), // 4 hours from now
+        impact: { co2SavedKg: 8.5 },
+        location: { type: "Point", coordinates: [77.5946, 12.9716] }
     },
     {
+        _id: "d2",
         id: "d2",
         ngoName: "Food Angels",
+        foodName: "Mixed Greens",
         foodType: "Mixed Greens",
+        quantity: "15 meals",
         quantityMeals: 15,
         status: "ACCEPTED",
         createdAt: new Date(Date.now() - 3600000).toISOString(),
-        impact: { co2SavedKg: 4.2 }
+        expiresAt: new Date(Date.now() + 2 * 3600000).toISOString(),
+        impact: { co2SavedKg: 4.2 },
+        location: { type: "Point", coordinates: [77.6, 12.98] }
     },
     {
+        _id: "d3",
         id: "d3",
         ngoName: "Community Kitchen",
+        foodName: "Assorted Breads",
         foodType: "Assorted Breads",
+        quantity: "50 meals",
         quantityMeals: 50,
         status: "COLLECTED",
         createdAt: new Date(Date.now() - 86400000).toISOString(),
-        impact: { co2SavedKg: 15.0 }
+        expiresAt: new Date(Date.now() - 80000000).toISOString(),
+        impact: { co2SavedKg: 15.0 },
+        location: { type: "Point", coordinates: [77.62, 12.95] }
     },
     {
+        _id: "d4",
         id: "d4",
         ngoName: "Hope Foundation",
+        foodName: "Pasta Trays",
         foodType: "Pasta Trays",
+        quantity: "30 meals",
         quantityMeals: 30,
         status: "COLLECTED",
         createdAt: new Date(Date.now() - 172800000).toISOString(),
-        impact: { co2SavedKg: 12.8 }
+        expiresAt: new Date(Date.now() - 170000000).toISOString(),
+        impact: { co2SavedKg: 12.8 },
+        location: { type: "Point", coordinates: [77.58, 12.96] }
     }
 ];
 
 export default function RestaurantDashboard() {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [donations, setDonations] = useState<Donation[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [viewingImage, setViewingImage] = useState<string | null>(null);
 
-    useEffect(() => {
+    const loadData = () => {
+        setLoading(true);
         // Simulate loading
-        const timer = setTimeout(() => {
+        setTimeout(() => {
             setDonations(mockDonations);
             setLoading(false);
         }, 800);
-        return () => clearTimeout(timer);
+    };
+
+    useEffect(() => {
+        loadData();
     }, []);
 
     const handleCreateDonation = (newDonation: Donation) => {
@@ -94,13 +122,21 @@ export default function RestaurantDashboard() {
                         <p className="text-stone-500 dark:text-stone-400 mt-1">Track your contributions and environmental impact</p>
                     </div>
 
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition-all shadow-lg shadow-emerald-600/20 active:scale-95"
-                    >
-                        <Plus size={20} />
-                        New Donation
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition-all shadow-lg shadow-emerald-600/20 active:scale-95"
+                        >
+                            <Plus size={20} />
+                            New Donation
+                        </button>
+                        <button
+                            onClick={loadData}
+                            className="p-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 shadow-sm"
+                        >
+                            <RefreshCw size={20} className={cn(loading && "animate-spin")} />
+                        </button>
+                    </div>
                 </header>
 
                 {/* Stats Grid */}
@@ -161,7 +197,8 @@ export default function RestaurantDashboard() {
                                         initial={{ opacity: 0, scale: 0.98 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         whileHover={{ scale: 1.01 }}
-                                        className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 hover:border-emerald-200 dark:hover:border-emerald-800 transition-all group shadow-sm hover:shadow-md dark:shadow-none"
+                                        className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 hover:border-emerald-200 dark:hover:border-emerald-800 transition-all group shadow-sm hover:shadow-md dark:shadow-none cursor-pointer"
+                                        onClick={() => navigate(`/history/${donation.id}`)}
                                     >
                                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
 
@@ -185,6 +222,15 @@ export default function RestaurantDashboard() {
                                                             <Leaf size={12} />
                                                             {donation.impact?.co2SavedKg}kg CO₂
                                                         </span>
+                                                        {donation.expiresAt && (
+                                                            <>
+                                                                <span className="w-1 h-1 rounded-full bg-stone-300 dark:bg-stone-600" />
+                                                                <span className="text-stone-500 dark:text-stone-400 flex items-center gap-1">
+                                                                    <Clock size={12} />
+                                                                    Expires: {new Date(donation.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                </span>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -196,15 +242,21 @@ export default function RestaurantDashboard() {
                                                 </div>
                                                 <StatusBadge status={donation.status} />
                                                 {donation.imageUrl && (
-                                                    <button
-                                                        onClick={() => setViewingImage(donation.imageUrl || null)}
+                                                    <div
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setViewingImage(donation.imageUrl || null);
+                                                        }}
                                                         className="p-2 text-stone-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors"
                                                         title="View Image"
                                                     >
                                                         <ImageIcon size={20} />
-                                                    </button>
+                                                    </div>
                                                 )}
-                                                <button className="p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800">
+                                                <button
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800"
+                                                >
                                                     <MoreVertical size={20} />
                                                 </button>
                                             </div>

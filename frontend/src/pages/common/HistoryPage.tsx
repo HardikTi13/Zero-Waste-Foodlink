@@ -1,68 +1,17 @@
 import { useState } from 'react';
 import { Search, Filter, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { type Donation } from '../../types/donation';
 import { StatusBadge } from '../../components/StatusBadge';
 
-// Mock Data (Expanded)
-const mockHistory: Donation[] = [
-    {
-        id: "d1",
-        restaurantName: "Spicy Bites",
-        ngoName: "Hope Foundation",
-        foodType: "Curry & Rice",
-        quantityMeals: 20,
-        status: "PENDING_NGO_CONFIRMATION",
-        createdAt: new Date().toISOString(),
-        impact: { co2SavedKg: 8.5 }
-    },
-    {
-        id: "d2",
-        restaurantName: "Green Salad Bar",
-        ngoName: "Food Angels",
-        foodType: "Mixed Greens",
-        quantityMeals: 15,
-        status: "ACCEPTED",
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-        impact: { co2SavedKg: 4.2 }
-    },
-    {
-        id: "d3",
-        restaurantName: "Bakery Delights",
-        ngoName: "Community Kitchen",
-        foodType: "Assorted Breads",
-        quantityMeals: 50,
-        status: "COLLECTED",
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        impact: { co2SavedKg: 15.0 }
-    },
-    {
-        id: "d4",
-        restaurantName: "Pizza Palace",
-        ngoName: "Hope Foundation",
-        foodType: "Pasta Trays",
-        quantityMeals: 30,
-        status: "COLLECTED",
-        createdAt: new Date(Date.now() - 172800000).toISOString(),
-        impact: { co2SavedKg: 12.8 }
-    },
-    {
-        id: "d5",
-        restaurantName: "Burger Joint",
-        ngoName: "Food Angels",
-        foodType: "Veggie Burgers",
-        quantityMeals: 25,
-        status: "REJECTED",
-        createdAt: new Date(Date.now() - 259200000).toISOString(),
-        impact: { co2SavedKg: 0 }
-    }
-];
+import { useNavigate } from 'react-router-dom';
+import { mockDonations } from '../../data/mockData';
 
 export default function HistoryPage() {
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<string>('ALL');
 
-    const filteredDonations = mockHistory.filter(donation => {
+    const filteredDonations = mockDonations.filter(donation => {
         const matchesSearch =
             donation.foodType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             donation.restaurantName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -71,7 +20,7 @@ export default function HistoryPage() {
         const matchesStatus = filterStatus === 'ALL' || donation.status === filterStatus;
 
         return matchesSearch && matchesStatus;
-    });
+    }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     return (
         <div className="p-6 md:p-8 max-w-7xl mx-auto min-h-screen bg-stone-50 dark:bg-stone-950 transition-colors duration-300">
@@ -128,7 +77,8 @@ export default function HistoryPage() {
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
-                                        className="group hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors"
+                                        className="group hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors cursor-pointer"
+                                        onClick={() => navigate(`/history/${donation.id}`)}
                                     >
                                         <td className="p-4 text-stone-600 dark:text-stone-400">
                                             <div className="flex items-center gap-2">

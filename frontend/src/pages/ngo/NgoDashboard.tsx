@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Utensils,
     Scale,
@@ -40,8 +41,11 @@ const mockStats: Stats = {
 
 const mockDonations: Donation[] = [
     {
+        _id: "d1",
         id: "d1",
         restaurantName: "Spicy Bites",
+        foodName: "Curry & Rice",
+        quantity: "20 meals",
         aiAnalysis: {
             foodType: "Curry & Rice",
             estimatedMeals: 20,
@@ -49,11 +53,16 @@ const mockDonations: Donation[] = [
             notesForNGO: "Contains dairy, spicy."
         },
         status: "PENDING_NGO_CONFIRMATION",
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 4 * 3600000).toISOString(),
+        location: { type: "Point", coordinates: [77.5946, 12.9716] }
     },
     {
+        _id: "d2",
         id: "d2",
         restaurantName: "Green Salad Bar",
+        foodName: "Mixed Greens",
+        quantity: "15 meals",
         aiAnalysis: {
             foodType: "Mixed Greens",
             estimatedMeals: 15,
@@ -61,11 +70,16 @@ const mockDonations: Donation[] = [
             notesForNGO: "Keep refrigerated."
         },
         status: "ACCEPTED",
-        createdAt: new Date(Date.now() - 3600000).toISOString()
+        createdAt: new Date(Date.now() - 3600000).toISOString(),
+        expiresAt: new Date(Date.now() + 2 * 3600000).toISOString(),
+        location: { type: "Point", coordinates: [77.6, 12.98] }
     },
     {
+        _id: "d3",
         id: "d3",
         restaurantName: "Bakery Delights",
+        foodName: "Assorted Breads",
+        quantity: "50 meals",
         aiAnalysis: {
             foodType: "Assorted Breads",
             estimatedMeals: 50,
@@ -73,7 +87,9 @@ const mockDonations: Donation[] = [
             notesForNGO: "Contains gluten."
         },
         status: "COLLECTED",
-        createdAt: new Date(Date.now() - 86400000).toISOString()
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+        expiresAt: new Date(Date.now() - 80000000).toISOString(),
+        location: { type: "Point", coordinates: [77.62, 12.95] }
     }
 ];
 
@@ -106,6 +122,7 @@ const updateDonationStatusApi = async (id: string, status: Donation['status']): 
 };
 
 export default function NgoDashboard() {
+    const navigate = useNavigate();
     const [selectedNgo, setSelectedNgo] = useState<string>(NGO_OPTIONS[0].id);
     const [stats, setStats] = useState<Stats | null>(null);
     const [donations, setDonations] = useState<Donation[]>([]);
@@ -236,7 +253,8 @@ export default function NgoDashboard() {
                                         initial={{ opacity: 0, scale: 0.98 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.98 }}
-                                        className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 hover:border-emerald-200 dark:hover:border-emerald-800 transition-colors shadow-sm hover:shadow-md dark:shadow-none"
+                                        className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 hover:border-emerald-200 dark:hover:border-emerald-800 transition-colors shadow-sm hover:shadow-md dark:shadow-none cursor-pointer"
+                                        onClick={() => navigate(`/history/${donation.id}`)}
                                     >
                                         <div className="flex flex-col md:flex-row justify-between gap-4">
                                             <div className="space-y-3 flex-1">
@@ -272,7 +290,10 @@ export default function NgoDashboard() {
                                             <div className="flex items-center gap-2 md:self-center pt-2 md:pt-0 border-t md:border-t-0 border-stone-100 dark:border-stone-800">
                                                 {donation.imageUrl && (
                                                     <button
-                                                        onClick={() => setViewingImage(donation.imageUrl || null)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setViewingImage(donation.imageUrl || null);
+                                                        }}
                                                         className="p-2 text-stone-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors"
                                                         title="View Image"
                                                     >
@@ -282,7 +303,10 @@ export default function NgoDashboard() {
                                                 {donation.status === 'PENDING_NGO_CONFIRMATION' && (
                                                     <>
                                                         <button
-                                                            onClick={() => handleStatusUpdate(donation.id, 'ACCEPTED')}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleStatusUpdate(donation.id, 'ACCEPTED');
+                                                            }}
                                                             disabled={!!processingId}
                                                             className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-emerald-600/20"
                                                         >
@@ -294,7 +318,10 @@ export default function NgoDashboard() {
                                                             Accept
                                                         </button>
                                                         <button
-                                                            onClick={() => handleStatusUpdate(donation.id, 'REJECTED')}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleStatusUpdate(donation.id, 'REJECTED');
+                                                            }}
                                                             disabled={!!processingId}
                                                             className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                         >
@@ -306,7 +333,10 @@ export default function NgoDashboard() {
 
                                                 {donation.status === 'ACCEPTED' && (
                                                     <button
-                                                        onClick={() => handleStatusUpdate(donation.id, 'COLLECTED')}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleStatusUpdate(donation.id, 'COLLECTED');
+                                                        }}
                                                         disabled={!!processingId}
                                                         className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-stone-800 dark:bg-stone-700 hover:bg-stone-900 dark:hover:bg-stone-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                                                     >
