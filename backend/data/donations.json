@@ -1,73 +1,42 @@
 [
   {
-    "_id": "64f8d9d9e4a6a9b0f8e7c0a1",
-    "restaurantId": "rest001",
-    "restaurantName": "Green Leaf Cafe",
-    "foodItems": [
-      {
-        "name": "Mixed Vegetables",
-        "quantity": 5,
-        "unit": "kg",
-        "expiryHours": 24,
-        "description": "Fresh mixed vegetables including carrots, broccoli, and bell peppers",
-        "category": "vegetables",
-        "image": "https://example.com/images/veggies.jpg"
-      }
-    ],
-    "pickupLocation": {
+    "restaurantName": "Fresh Bites",
+    "foodName": "Vegetable Curry",
+    "description": "Leftover vegetable curry from lunch service.",
+    "quantity": "5 kg",
+    "imageUrl": "https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg",
+    "aiAnalysis": {
+      "freshnessScore": 9,
+      "confidence": 0.95
+    },
+    "location": {
       "type": "Point",
-      "coordinates": [-73.9857, 40.7484],
-      "address": "123 Main St, New York, NY 10001"
+      "coordinates": [
+        77.2090,
+        28.6139
+      ]
     },
-    "status": "available",
-    "pickupTimeWindow": {
-      "start": "2023-09-07T14:00:00Z",
-      "end": "2023-09-07T16:00:00Z"
-    },
-    "aiVerified": true,
-    "createdAt": "2023-09-06T14:00:00Z",
-    "updatedAt": "2023-09-06T14:00:00Z"
+    "expiresAt": "2025-12-31T23:59:59.999Z",
+    "isClaimed": false
   },
   {
-    "_id": "64f8d9d9e4a6a9b0f8e7c0a2",
-    "restaurantId": "rest002",
-    "restaurantName": "Bread & Butter Bakery",
-    "foodItems": [
-      {
-        "name": "Assorted Breads",
-        "quantity": 10,
-        "unit": "pieces",
-        "expiryHours": 6,
-        "description": "Freshly baked assortment of bread rolls and baguettes",
-        "category": "bakery",
-        "image": "https://example.com/images/breads.jpg"
-      },
-      {
-        "name": "Croissants",
-        "quantity": 8,
-        "unit": "pieces",
-        "expiryHours": 4,
-        "description": "Buttery and flaky croissants straight from the oven",
-        "category": "bakery",
-        "image": "https://example.com/images/croissants.jpg"
-      }
-    ],
-    "pickupLocation": {
+    "restaurantName": "Pizza Palace",
+    "foodName": "Assorted Pizzas",
+    "description": "Various pizza slices.",
+    "quantity": "10 boxes",
+    "imageUrl": "https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg",
+    "aiAnalysis": {
+      "freshnessScore": 8,
+      "confidence": 0.90
+    },
+    "location": {
       "type": "Point",
-      "coordinates": [-73.9757, 40.7584],
-      "address": "456 Oak Ave, New York, NY 10002"
+      "coordinates": [
+        77.2100,
+        28.6100
+      ]
     },
-    "status": "claimed",
-    "claimedBy": {
-      "ngoId": "ngo001",
-      "ngoName": "Community Food Bank"
-    },
-    "pickupTimeWindow": {
-      "start": "2023-09-07T10:00:00Z",
-      "end": "2023-09-07T12:00:00Z"
-    },
-    "aiVerified": true,
-    "createdAt": "2023-09-06T10:00:00Z",
-    "updatedAt": "2023-09-06T11:00:00Z"
+    "expiresAt": "2025-12-31T23:59:59.999Z",
+    "isClaimed": false
   }
 ]

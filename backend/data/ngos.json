@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Helping Hands",
+        "email": "contact@helpinghands.org",
+        "phone": "1234567890",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                77.2000,
+                28.6000
+            ]
+        }
+    },
+    {
+        "name": "Food for All",
+        "email": "info@foodforall.org",
+        "phone": "0987654321",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                77.2200,
+                28.6200
+            ]
+        }
+    }
+]

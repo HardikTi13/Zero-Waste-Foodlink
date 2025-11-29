@@ -1,23 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { createDonation, getDonations, getDonation, updateDonationStatus, deleteDonation } = require('../controllers/donationController');
+const {
+    createDonation,
+    getNearbyDonations,
+    claimDonation,
+    analyzeImageForForm,
+    getDonations
+} = require('../controllers/donationController');
 const upload = require('../middleware/upload');
 
-// Route: /api/donations
-
-// Create a new donation with image upload
-router.post('/', upload.array('images', 5), createDonation);
-
-// Get all donations
+router.post('/', upload.single('image'), createDonation);
 router.get('/', getDonations);
-
-// Get single donation
-router.get('/:id', getDonation);
-
-// Update donation status
-router.put('/:id/status', updateDonationStatus);
-
-// Delete donation
-router.delete('/:id', deleteDonation);
+router.post('/analyze', upload.single('image'), analyzeImageForForm);
+router.get('/nearby', getNearbyDonations);
+router.post('/:id/claim', claimDonation);
 
 module.exports = router;

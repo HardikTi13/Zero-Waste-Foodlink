@@ -1,13 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { getStats, getNGOStats } = require('../controllers/statsController');
+const { getStats } = require('../controllers/statsController');
 
-// Route: /api/stats
-
-// Get platform statistics
-router.get('/', getStats);
-
-// Get NGO-specific statistics
-router.get('/ngo/:id', getNGOStats);
+router.get('/overview', getStats);
 
 module.exports = router;

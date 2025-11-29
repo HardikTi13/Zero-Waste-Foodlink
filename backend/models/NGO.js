@@ -3,72 +3,40 @@ const mongoose = require('mongoose');
 const ngoSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: [true, 'Please add a name'],
+    trim: true,
+    maxlength: [50, 'Name can not be more than 50 characters']
   },
   email: {
     type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      'Please add a valid email'
+    ],
+    required: [true, 'Please add an email'],
+    unique: true
   },
   phone: {
     type: String,
-    required: true,
-  },
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String,
-    country: String,
+    maxlength: [20, 'Phone number can not be longer than 20 characters']
   },
   location: {
     type: {
       type: String,
-      default: 'Point',
+      enum: ['Point'],
+      required: true
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
-      index: '2dsphere',
+      type: [Number],
+      required: true,
+      index: '2dsphere'
     },
-  },
-  capacity: {
-    type: Number,
-    required: true,
-  },
-  foodPreferences: [{
-    type: String,
-    enum: ['vegetables', 'fruits', 'dairy', 'bakery', 'cooked_food', 'beverages', 'other'],
-  }],
-  verified: {
-    type: Boolean,
-    default: false,
-  },
-  active: {
-    type: Boolean,
-    default: true,
-  },
-  totalDonationsReceived: {
-    type: Number,
-    default: 0,
+    formattedAddress: String
   },
   createdAt: {
     type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-// Update the updatedAt field before saving
-ngoSchema.pre('save', function (next) {
-  this.updatedAt = Date.now();
-  next();
+    default: Date.now
+  }
 });
 
 module.exports = mongoose.model('NGO', ngoSchema);
