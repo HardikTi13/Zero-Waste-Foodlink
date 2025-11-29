@@ -2,34 +2,14 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-    ChefHat,
-    HeartHandshake,
     ArrowRight,
     Mail,
     Lock,
     User,
     Loader2,
     Leaf,
-    Apple,
-    Soup,
-    Wheat,
-    Carrot,
-    Grape,
-    Cherry,
-    Drumstick,
-    Pizza,
-    Sandwich,
-    Cookie,
-    Milk,
-    Fish,
-    Egg,
-    UtensilsCrossed,
-    Candy,
-    Banana,
-    Croissant,
-    Coffee,
-    IceCream,
-    Sprout
+    ChefHat,
+    HeartHandshake
 } from 'lucide-react';
 
 type AuthMode = 'LOGIN' | 'SIGNUP';
@@ -68,43 +48,81 @@ export default function AuthPage() {
     return (
         <div className="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 flex items-center justify-center p-4 font-sans selection:bg-emerald-200 selection:text-emerald-900 dark:selection:bg-emerald-900 dark:selection:text-emerald-200 overflow-hidden relative transition-colors duration-300">
 
-            {/* Background Elements */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-200/40 dark:bg-emerald-900/20 rounded-full blur-[100px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-200/40 dark:bg-orange-900/20 rounded-full blur-[100px]" />
+            {/* Background Video */}
+            <div className="absolute inset-0 w-full h-full z-0">
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                >
+                    <source src="/vid.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-[2px]" />
             </div>
 
-            {/* Full Screen Food Doodles Background */}
-            <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden z-0">
-                {/* Top Area */}
-                <Apple className="absolute top-[5%] left-[5%] text-stone-300 dark:text-stone-700 rotate-[-12deg] opacity-50" size={64} strokeWidth={1.5} />
-                <Soup className="absolute top-[12%] left-[20%] text-stone-300 dark:text-stone-700 rotate-[15deg] opacity-50" size={56} strokeWidth={1.5} />
-                <Wheat className="absolute top-[8%] right-[15%] text-stone-300 dark:text-stone-700 rotate-[45deg] opacity-50" size={52} strokeWidth={1.5} />
-                <Carrot className="absolute top-[18%] right-[5%] text-stone-300 dark:text-stone-700 rotate-[24deg] opacity-50" size={60} strokeWidth={1.5} />
-                <Grape className="absolute top-[5%] left-[40%] text-stone-300 dark:text-stone-700 rotate-[-10deg] opacity-40" size={40} strokeWidth={1.5} />
+            {/* SVG Filter for Liquid Glass Effect */}
+            <svg width="0" height="0" style={{ position: 'absolute' }}>
+                <defs>
+                    <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%">
+                        <feTurbulence
+                            type="fractalNoise"
+                            baseFrequency="0.025 0.025"
+                            numOctaves="2"
+                            seed="92"
+                            result="noise"
+                        />
+                        <feGaussianBlur
+                            in="noise"
+                            stdDeviation="2"
+                            result="blurred"
+                        />
+                        <feDisplacementMap
+                            in="SourceGraphic"
+                            in2="blurred"
+                            scale="30"
+                            xChannelSelector="R"
+                            yChannelSelector="G"
+                        />
+                    </filter>
+                </defs>
+            </svg>
 
-                {/* Upper Middle */}
-                <Cherry className="absolute top-[25%] left-[10%] text-stone-300 dark:text-stone-700 rotate-[30deg] opacity-40" size={32} strokeWidth={1.5} />
-                <Drumstick className="absolute top-[28%] left-[30%] text-stone-300 dark:text-stone-700 rotate-[-20deg] opacity-50" size={58} strokeWidth={1.5} />
-                <Pizza className="absolute top-[35%] left-[-2%] text-stone-300 dark:text-stone-700 rotate-[-45deg] opacity-50" size={72} strokeWidth={1.5} />
-                <Sandwich className="absolute top-[32%] right-[-2%] text-stone-300 dark:text-stone-700 rotate-[15deg] opacity-50" size={68} strokeWidth={1.5} />
-                <Cookie className="absolute top-[40%] right-[15%] text-stone-300 dark:text-stone-700 rotate-[60deg] opacity-50" size={48} strokeWidth={1.5} />
-                <Milk className="absolute top-[25%] right-[30%] text-stone-300 dark:text-stone-700 rotate-[-15deg] opacity-40" size={42} strokeWidth={1.5} />
-
-                {/* Lower Middle */}
-                <Fish className="absolute bottom-[40%] left-[5%] text-stone-300 dark:text-stone-700 rotate-[180deg] opacity-50" size={54} strokeWidth={1.5} />
-                <Egg className="absolute bottom-[35%] left-[25%] text-stone-300 dark:text-stone-700 rotate-[-10deg] opacity-50" size={46} strokeWidth={1.5} />
-                <UtensilsCrossed className="absolute top-[45%] left-[45%] text-stone-300 dark:text-stone-700 rotate-[180deg] opacity-20" size={120} strokeWidth={1} />
-                <Candy className="absolute bottom-[45%] right-[25%] text-stone-300 dark:text-stone-700 rotate-[15deg] opacity-40" size={34} strokeWidth={1.5} />
-                <Banana className="absolute bottom-[38%] right-[5%] text-stone-300 dark:text-stone-700 rotate-[45deg] opacity-40" size={52} strokeWidth={1.5} />
-
-                {/* Bottom Area */}
-                <Croissant className="absolute bottom-[15%] left-[10%] text-stone-300 dark:text-stone-700 rotate-[-30deg] opacity-50" size={64} strokeWidth={1.5} />
-                <Coffee className="absolute bottom-[20%] right-[10%] text-stone-300 dark:text-stone-700 rotate-[12deg] opacity-50" size={50} strokeWidth={1.5} />
-                <IceCream className="absolute bottom-[10%] right-[25%] text-stone-300 dark:text-stone-700 rotate-[-15deg] opacity-50" size={56} strokeWidth={1.5} />
-                <Leaf className="absolute bottom-[5%] left-[40%] text-stone-300 dark:text-stone-700 rotate-[45deg] opacity-40" size={38} strokeWidth={1.5} />
-                <Sprout className="absolute bottom-[8%] right-[45%] text-stone-300 dark:text-stone-700 rotate-[-20deg] opacity-40" size={36} strokeWidth={1.5} />
-            </div>
+            <style>{`
+                .liquid-glass-card {
+                    position: relative;
+                    isolation: isolate;
+                }
+                
+                .liquid-glass-card::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    z-index: 0;
+                    border-radius: 24px;
+                    box-shadow: inset 0 0 12px -2px rgba(255, 255, 255, 0.4);
+                    background-color: rgba(255, 255, 255, 0.1);
+                    pointer-events: none;
+                }
+                
+                .liquid-glass-card::after {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    z-index: -1;
+                    border-radius: 24px;
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                    filter: url(#glass-distortion);
+                    -webkit-filter: url(#glass-distortion);
+                    isolation: isolate;
+                    pointer-events: none;
+                    opacity: 0.7;
+                }
+            `}</style>
 
             <div className="w-full max-w-md relative z-10">
                 <div className="text-center mb-8">
@@ -119,7 +137,7 @@ export default function AuthPage() {
                     <p className="text-stone-500 dark:text-stone-400">Connecting surplus food with those in need.</p>
                 </div>
 
-                <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 md:p-8 shadow-xl shadow-stone-200/50 dark:shadow-none transition-colors duration-300">
+                <div className="liquid-glass-card bg-white/40 dark:bg-stone-900/60 border border-white/20 dark:border-stone-800/50 rounded-3xl p-6 md:p-8 shadow-xl shadow-stone-200/20 dark:shadow-none transition-colors duration-300 backdrop-blur-sm">
                     <AnimatePresence mode="wait">
                         {!role ? (
                             <motion.div
