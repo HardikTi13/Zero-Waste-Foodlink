@@ -1,0 +1,73 @@
+[
+  {
+    "_id": "64f8d9d9e4a6a9b0f8e7c0a1",
+    "restaurantId": "rest001",
+    "restaurantName": "Green Leaf Cafe",
+    "foodItems": [
+      {
+        "name": "Mixed Vegetables",
+        "quantity": 5,
+        "unit": "kg",
+        "expiryHours": 24,
+        "description": "Fresh mixed vegetables including carrots, broccoli, and bell peppers",
+        "category": "vegetables",
+        "image": "https://example.com/images/veggies.jpg"
+      }
+    ],
+    "pickupLocation": {
+      "type": "Point",
+      "coordinates": [-73.9857, 40.7484],
+      "address": "123 Main St, New York, NY 10001"
+    },
+    "status": "available",
+    "pickupTimeWindow": {
+      "start": "2023-09-07T14:00:00Z",
+      "end": "2023-09-07T16:00:00Z"
+    },
+    "aiVerified": true,
+    "createdAt": "2023-09-06T14:00:00Z",
+    "updatedAt": "2023-09-06T14:00:00Z"
+  },
+  {
+    "_id": "64f8d9d9e4a6a9b0f8e7c0a2",
+    "restaurantId": "rest002",
+    "restaurantName": "Bread & Butter Bakery",
+    "foodItems": [
+      {
+        "name": "Assorted Breads",
+        "quantity": 10,
+        "unit": "pieces",
+        "expiryHours": 6,
+        "description": "Freshly baked assortment of bread rolls and baguettes",
+        "category": "bakery",
+        "image": "https://example.com/images/breads.jpg"
+      },
+      {
+        "name": "Croissants",
+        "quantity": 8,
+        "unit": "pieces",
+        "expiryHours": 4,
+        "description": "Buttery and flaky croissants straight from the oven",
+        "category": "bakery",
+        "image": "https://example.com/images/croissants.jpg"
+      }
+    ],
+    "pickupLocation": {
+      "type": "Point",
+      "coordinates": [-73.9757, 40.7584],
+      "address": "456 Oak Ave, New York, NY 10002"
+    },
+    "status": "claimed",
+    "claimedBy": {
+      "ngoId": "ngo001",
+      "ngoName": "Community Food Bank"
+    },
+    "pickupTimeWindow": {
+      "start": "2023-09-07T10:00:00Z",
+      "end": "2023-09-07T12:00:00Z"
+    },
+    "aiVerified": true,
+    "createdAt": "2023-09-06T10:00:00Z",
+    "updatedAt": "2023-09-06T11:00:00Z"
+  }
+]
