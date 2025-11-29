@@ -1,275 +1,189 @@
 const Donation = require('../models/Donation');
-const NGO = require('../models/NGO');
-const { analyzeFoodImage } = require('../services/gemini');
-const { uploadImageToCloudinary } = require('../services/imageUpload');
-const { matchDonationWithNGOs, getAIRecommendedNGO, prioritizeNGOs } = require('../services/matching');
-const { formatDonationResponse, generateUniqueId } = require('../utils/helpers');
-const path = require('path');
+const { uploadImage } = require('../services/imageUpload');
+const { analyzeImage } = require('../services/gemini');
+const { createDonationValidation } = require('../utils/validators');
+const fs = require('fs');
 
-/**
- * Create a new donation
- * @route POST /api/donations
- * @access Private (Restaurant)
- */
-const createDonation = async (req, res, next) => {
+// @desc    Create a new donation
+// @route   POST /api/donations
+// @access  Public
+exports.createDonation = async (req, res, next) => {
   try {
-    const { restaurantId, restaurantName, pickupLocation, pickupTimeWindow } = req.body;
-    
-    // Validate required fields
-    if (!restaurantId || !restaurantName || !pickupLocation || !pickupTimeWindow) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required fields'
-      });
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'Please upload an image' });
     }
-    
-    // Process food items
-    let foodItems = [];
-    
-    if (req.files && req.files.length > 0) {
-      // Process each uploaded image
-      for (const file of req.files) {
-        // Analyze food image using AI
-        const foodData = await analyzeFoodImage(file.path);
-        
-        // Upload image to Cloudinary
-        const uploadResult = await uploadImageToCloudinary(file.path);
-        
-        // Add food item with AI data and image URL
-        foodItems.push({
-          ...foodData,
-          image: uploadResult.url
-        });
-      }
-    } else if (req.body.foodItems) {
-      // Use provided food items data
-      foodItems = JSON.parse(req.body.foodItems);
+
+    // Validate text fields
+    const { error } = createDonationValidation(req.body);
+    if (error) {
+      return res.status(400).json({ success: false, error: error.details[0].message });
     }
-    
-    // Validate food items
-    if (foodItems.length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'At least one food item is required'
-      });
+
+    // Analyze image
+    const analysis = await analyzeImage(req.file.path);
+
+    // Upload image to cloud/storage (assuming uploadImage returns object with url)
+    const uploadedImage = await uploadImage(req.file.path);
+
+    // Calculate expiration
+    let expiresAt;
+    if (req.body.expiresAt) {
+      expiresAt = new Date(req.body.expiresAt);
+    } else {
+      // Default to 24 hours if not provided by AI or user
+      const hoursToAdd = analysis.estimatedHoursToExpire || 24;
+      expiresAt = new Date(Date.now() + hoursToAdd * 60 * 60 * 1000);
     }
-    
-    // Create donation object
-    const donationData = {
-      restaurantId,
-      restaurantName,
-      foodItems,
-      pickupLocation,
-      pickupTimeWindow,
-      aiVerified: true
-    };
-    
-    // Create donation in database
-    const donation = new Donation(donationData);
-    await donation.save();
-    
-    // Get all active NGOs
-    const ngos = await NGO.find({ active: true });
-    
-    // Match donation with NGOs
-    const matchingNGOs = matchDonationWithNGOs(donation, ngos);
-    
-    // Prioritize NGOs
-    const prioritizedNGOs = prioritizeNGOs(donation, ngos);
-    
-    // Get AI recommendation
-    const recommendedNGO = await getAIRecommendedNGO(donation, ngos);
-    
+
+    const donation = await Donation.create({
+      restaurantName: req.body.restaurantName || 'Anonymous', // Fallback if not in body
+      foodName: analysis.foodName || req.body.foodName,
+      description: analysis.description || req.body.description,
+      quantity: analysis.estimatedQuantity || req.body.quantity,
+      imageUrl: uploadedImage.url,
+      aiAnalysis: {
+        freshnessScore: analysis.freshnessScore,
+        confidence: analysis.confidence,
+        estimatedHoursToExpire: analysis.estimatedHoursToExpire
+      },
+      location: {
+        type: 'Point',
+        coordinates: [parseFloat(req.body.longitude), parseFloat(req.body.latitude)]
+      },
+      expiresAt,
+      isClaimed: false
+    });
+
+    // Clean up temp file
+    try {
+      fs.unlinkSync(req.file.path);
+    } catch (e) {
+      console.error('Error deleting temp file:', e);
+    }
+
     res.status(201).json({
       success: true,
-      data: {
-        donation: formatDonationResponse(donation),
-        matchingNGOs: prioritizedNGOs.slice(0, 5), // Top 5 matches
-        recommendedNGO: recommendedNGO ? {
-          id: recommendedNGO._id,
-          name: recommendedNGO.name,
-          distance: recommendedNGO.distance
-        } : null
-      }
+      data: donation
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
-/**
- * Get all donations
- * @route GET /api/donations
- * @access Public
- */
-const getDonations = async (req, res, next) => {
+// @desc    Get all donations (for restaurant dashboard)
+// @route   GET /api/donations
+// @access  Public
+exports.getDonations = async (req, res, next) => {
   try {
-    const { status, restaurantId, ngoId } = req.query;
-    
-    // Build filter object
-    let filter = {};
-    
-    if (status) {
-      filter.status = status;
+    const donations = await Donation.find().sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: donations.length,
+      data: donations
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Get nearby donations
+// @route   GET /api/donations/nearby
+// @access  Public
+exports.getNearbyDonations = async (req, res, next) => {
+  try {
+    const { lat, lon, radius } = req.query;
+
+    if (!lat || !lon) {
+      return res.status(400).json({ success: false, error: 'Please provide lat and lon' });
     }
-    
-    if (restaurantId) {
-      filter.restaurantId = restaurantId;
+
+    const distanceInMeters = (radius || 5) * 1000; // Default 5km
+
+    const donations = await Donation.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [parseFloat(lon), parseFloat(lat)]
+          },
+          $maxDistance: distanceInMeters
+        }
+      },
+      isClaimed: false,
+      expiresAt: { $gt: new Date() }
+    });
+
+    res.status(200).json({
+      success: true,
+      count: donations.length,
+      data: donations
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Claim a donation
+// @route   POST /api/donations/:id/claim
+// @access  Public
+exports.claimDonation = async (req, res, next) => {
+  try {
+    const { ngoId } = req.body;
+
+    if (!ngoId) {
+      return res.status(400).json({ success: false, error: 'NGO ID is required' });
     }
-    
-    if (ngoId) {
-      filter['claimedBy.ngoId'] = ngoId;
-    }
-    
-    // Get donations from database
-    const donations = await Donation.find(filter)
-      .sort({ createdAt: -1 });
-    
-    // Format donations for response
-    const formattedDonations = donations.map(donation => 
-      formatDonationResponse(donation)
+
+    const donation = await Donation.findOneAndUpdate(
+      { _id: req.params.id, isClaimed: false },
+      {
+        $set: {
+          isClaimed: true,
+          claimedBy: ngoId,
+          claimedAt: new Date()
+        }
+      },
+      { new: true }
     );
-    
-    res.status(200).json({
-      success: true,
-      count: formattedDonations.length,
-      data: formattedDonations
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
-/**
- * Get single donation
- * @route GET /api/donations/:id
- * @access Public
- */
-const getDonation = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    
-    // Get donation from database
-    const donation = await Donation.findById(id);
-    
     if (!donation) {
-      return res.status(404).json({
-        success: false,
-        error: 'Donation not found'
-      });
+      return res.status(409).json({ success: false, error: 'Donation already claimed or not found' });
     }
-    
-    // Get all active NGOs for matching
-    const ngos = await NGO.find({ active: true });
-    
-    // Match donation with NGOs
-    const matchingNGOs = matchDonationWithNGOs(donation, ngos);
-    
-    // Prioritize NGOs
-    const prioritizedNGOs = prioritizeNGOs(donation, ngos);
-    
+
     res.status(200).json({
       success: true,
-      data: {
-        donation: formatDonationResponse(donation),
-        matchingNGOs: prioritizedNGOs.slice(0, 5) // Top 5 matches
-      }
+      data: donation
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
-/**
- * Update donation status
- * @route PUT /api/donations/:id/status
- * @access Private
- */
-const updateDonationStatus = async (req, res, next) => {
+// @desc    Analyze image for donation form
+// @route   POST /api/donations/analyze
+// @access  Public
+exports.analyzeImageForForm = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { status, ngoId, ngoName } = req.body;
-    
-    // Validate status
-    const validStatuses = ['available', 'claimed', 'picked_up', 'expired'];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid status'
-      });
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'Please upload an image' });
     }
-    
-    // Build update object
-    const updateData = { status };
-    
-    if (status === 'claimed' && ngoId && ngoName) {
-      updateData.claimedBy = { ngoId, ngoName };
+
+    // Analyze image
+    const analysis = await analyzeImage(req.file.path);
+
+    // Clean up temp file
+    try {
+      fs.unlinkSync(req.file.path);
+    } catch (e) {
+      console.error('Error deleting temp file:', e);
     }
-    
-    // Update donation in database
-    const donation = await Donation.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    );
-    
-    if (!donation) {
-      return res.status(404).json({
-        success: false,
-        error: 'Donation not found'
-      });
-    }
-    
-    // If donation was claimed, update NGO's total donations received
-    if (status === 'claimed' && ngoId) {
-      await NGO.findByIdAndUpdate(
-        ngoId,
-        { $inc: { totalDonationsReceived: 1 } },
-        { new: true, runValidators: true }
-      );
-    }
-    
+
     res.status(200).json({
       success: true,
-      data: formatDonationResponse(donation)
+      data: analysis
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
-};
-
-/**
- * Delete donation
- * @route DELETE /api/donations/:id
- * @access Private (Restaurant)
- */
-const deleteDonation = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    
-    // Delete donation from database
-    const donation = await Donation.findByIdAndDelete(id);
-    
-    if (!donation) {
-      return res.status(404).json({
-        success: false,
-        error: 'Donation not found'
-      });
-    }
-    
-    res.status(200).json({
-      success: true,
-      data: {}
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-module.exports = {
-  createDonation,
-  getDonations,
-  getDonation,
-  updateDonationStatus,
-  deleteDonation
 };

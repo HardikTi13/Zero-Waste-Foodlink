@@ -1,86 +1,76 @@
 const mongoose = require('mongoose');
 
 const donationSchema = new mongoose.Schema({
-  restaurantId: {
-    type: String,
-    required: true,
-  },
   restaurantName: {
     type: String,
-    required: true,
+    required: [true, 'Please add a restaurant name'],
+    trim: true
   },
-  foodItems: [{
-    name: {
-      type: String,
-      required: true,
-    },
-    quantity: {
+  foodName: {
+    type: String,
+    required: [true, 'Please add food name'],
+    trim: true
+  },
+  description: {
+    type: String,
+    required: [true, 'Please add a description']
+  },
+  quantity: {
+    type: String,
+    required: [true, 'Please add quantity']
+  },
+  imageUrl: {
+    type: String,
+    required: [true, 'Please add an image']
+  },
+  aiAnalysis: {
+    freshnessScore: {
       type: Number,
-      required: true,
+      min: 1,
+      max: 10
     },
-    unit: {
-      type: String,
-      required: true,
-    },
-    expiryHours: {
+    confidence: {
       type: Number,
-      required: true,
+      min: 0,
+      max: 1
     },
-    description: {
-      type: String,
-      required: true,
-    },
-    category: {
-      type: String,
-      enum: ['vegetables', 'fruits', 'dairy', 'bakery', 'cooked_food', 'beverages', 'other'],
-      required: true,
-    },
-    image: {
-      type: String,
-    },
-  }],
-  pickupLocation: {
+    estimatedHoursToExpire: {
+      type: Number,
+      required: false
+    }
+  },
+  location: {
     type: {
       type: String,
-      default: 'Point',
+      enum: ['Point'],
+      required: true
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
-      index: '2dsphere',
-    },
-    address: String,
+      type: [Number],
+      required: true,
+      index: '2dsphere'
+    }
   },
-  status: {
-    type: String,
-    enum: ['available', 'claimed', 'picked_up', 'expired'],
-    default: 'available',
+  expiresAt: {
+    type: Date,
+    required: true
+  },
+  isClaimed: {
+    type: Boolean,
+    default: false
   },
   claimedBy: {
-    ngoId: String,
-    ngoName: String,
+    type: mongoose.Schema.ObjectId,
+    ref: 'NGO',
+    default: null
   },
-  pickupTimeWindow: {
-    start: Date,
-    end: Date,
-  },
-  aiVerified: {
-    type: Boolean,
-    default: false,
+  claimedAt: {
+    type: Date
   },
   createdAt: {
     type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-// Update the updatedAt field before saving
-donationSchema.pre('save', function (next) {
-  this.updatedAt = Date.now();
-  next();
+    default: Date.now
+  }
 });
 
 module.exports = mongoose.model('Donation', donationSchema);
