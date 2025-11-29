@@ -185,8 +185,22 @@ export default function LandingPage() {
 
                         <h1 className="text-5xl md:text-7xl font-bold text-stone-900 dark:text-white mb-6 tracking-tight">
                             Share Food, <br />
-                            <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
-                                Waste Less.
+                            <span className="relative inline-block">
+                                <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent relative z-10">
+                                    Waste Less.
+                                </span>
+                                <svg
+                                    className="absolute -bottom-2 left-0 w-full h-3 text-emerald-500/50 -z-0"
+                                    viewBox="0 0 100 10"
+                                    preserveAspectRatio="none"
+                                >
+                                    <path
+                                        d="M0 5 Q 50 10 100 5"
+                                        stroke="currentColor"
+                                        strokeWidth="8"
+                                        fill="none"
+                                    />
+                                </svg>
                             </span>
                         </h1>
                         <p className="text-xl text-stone-600 dark:text-stone-300 mb-8 max-w-2xl mx-auto leading-relaxed">
