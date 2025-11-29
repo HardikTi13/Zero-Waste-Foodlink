@@ -112,10 +112,10 @@ export default function AuthPage() {
                         <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-600/20">
                             <Leaf size={20} className="text-white" />
                         </div>
+                        <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
+                            Platr
+                        </span>
                     </div>
-                    <h1 className="text-3xl font-bold text-stone-900 dark:text-white mb-2">
-                        Zero-Waste FoodLink
-                    </h1>
                     <p className="text-stone-500 dark:text-stone-400">Connecting surplus food with those in need.</p>
                 </div>
 

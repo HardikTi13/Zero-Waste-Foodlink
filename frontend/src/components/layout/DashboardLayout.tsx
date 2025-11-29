@@ -86,7 +86,7 @@ export default function DashboardLayout() {
                                 {isRestaurant ? <ChefHat size={24} /> : <HeartHandshake size={24} />}
                             </div>
                             <div>
-                                <h1 className="font-bold text-lg leading-tight text-stone-900 dark:text-white">FoodLink</h1>
+                                <h1 className="font-bold text-lg leading-tight text-stone-900 dark:text-white">Platr</h1>
                                 <span className="text-xs text-stone-500 dark:text-stone-400 font-medium uppercase tracking-wider">{role} Portal</span>
                             </div>
                         </div>
