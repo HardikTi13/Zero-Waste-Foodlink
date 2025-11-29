@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { type Donation } from '../../types/donation';
+import { analyzeImage, createDonation } from '../../api/donations';
 
 interface CreateDonationModalProps {
     isOpen: boolean;
@@ -22,47 +23,80 @@ export default function CreateDonationModal({ isOpen, onClose, onCreate }: Creat
         quantity: '',
         freshness: '',
         notes: '',
-        image: null as string | null
+        image: null as string | null,
+        imageFile: null as File | null
     });
+    const [estimatedHours, setEstimatedHours] = useState<number | null>(null);
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            // Preview
             const reader = new FileReader();
             reader.onloadend = () => {
-                setFormData({ ...formData, image: reader.result as string });
+                setFormData(prev => ({ ...prev, image: reader.result as string, imageFile: file }));
             };
             reader.readAsDataURL(file);
+
+            // Analyze
+            try {
+                const data = new FormData();
+                data.append('image', file);
+                
+                const response = await analyzeImage(data);
+                if (response.success && response.data) {
+                    const { foodName, estimatedQuantity, estimatedHoursToExpire, description } = response.data;
+                    setFormData(prev => ({
+                        ...prev,
+                        foodType: foodName || prev.foodType,
+                        quantity: estimatedQuantity || prev.quantity,
+                        freshness: `Expires in approx. ${estimatedHoursToExpire} hours`,
+                        notes: description || prev.notes
+                    }));
+                    setEstimatedHours(estimatedHoursToExpire);
+                }
+            } catch (error) {
+                console.error("Analysis failed", error);
+            }
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!formData.imageFile) {
+            alert("Please upload an image");
+            return;
+        }
         setIsSubmitting(true);
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+            const submitData = new FormData();
+            submitData.append('image', formData.imageFile);
+            submitData.append('restaurantName', 'My Restaurant'); // Hardcoded for now
+            submitData.append('foodName', formData.foodType);
+            submitData.append('quantity', formData.quantity);
+            submitData.append('description', formData.notes || 'No description provided');
+            submitData.append('latitude', '12.9716'); // Hardcoded for demo
+            submitData.append('longitude', '77.5946');
+            
+            if (estimatedHours) {
+                submitData.append('expiresAt', new Date(Date.now() + estimatedHours * 60 * 60 * 1000).toISOString());
+            }
 
-        const newDonation: Donation = {
-            _id: `d${Date.now()}`,
-            id: `d${Date.now()}`,
-            ngoName: "Pending Assignment",
-            foodName: formData.foodType,
-            foodType: formData.foodType,
-            quantity: `${formData.quantity} meals`,
-            quantityMeals: parseInt(formData.quantity) || 0,
-            status: "PENDING_NGO_CONFIRMATION",
-            createdAt: new Date().toISOString(),
-            expiresAt: new Date(Date.now() + 24 * 3600000).toISOString(), // Default 24h
-            impact: { co2SavedKg: (parseInt(formData.quantity) || 0) * 0.5 },
-            imageUrl: formData.image || undefined,
-            location: { type: "Point", coordinates: [0, 0] } // Placeholder
-        };
-
-        onCreate(newDonation);
-        setIsSubmitting(false);
-        onClose();
-        setFormData({ foodType: '', quantity: '', freshness: 'Good for 24 hours', notes: '', image: null });
+            const response = await createDonation(submitData);
+            
+            if (response.success) {
+                onCreate(response.data);
+                onClose();
+                setFormData({ foodType: '', quantity: '', freshness: '', notes: '', image: null, imageFile: null });
+                setEstimatedHours(null);
+            }
+        } catch (error) {
+            console.error("Creation failed", error);
+            alert("Failed to create donation. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -103,7 +137,7 @@ export default function CreateDonationModal({ isOpen, onClose, onCreate }: Creat
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                 <button
                                                     type="button"
-                                                    onClick={() => setFormData({ ...formData, image: null })}
+                                                    onClick={() => setFormData({ ...formData, image: null, imageFile: null })}
                                                     className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-lg"
                                                 >
                                                     <Trash2 size={20} />
@@ -171,8 +205,6 @@ export default function CreateDonationModal({ isOpen, onClose, onCreate }: Creat
                                     className="w-full bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all resize-none placeholder:text-stone-400 dark:placeholder:text-stone-500"
                                 />
                             </div>
-
-
 
                             <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/50 rounded-xl p-4 flex gap-3 text-sm text-emerald-800 dark:text-emerald-300">
                                 <AlertCircle size={20} className="text-emerald-600 dark:text-emerald-500 shrink-0" />
