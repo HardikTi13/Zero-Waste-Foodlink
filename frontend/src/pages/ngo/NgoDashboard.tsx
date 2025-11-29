@@ -15,6 +15,8 @@ import { cn } from '../../lib/utils';
 import { type Donation, type Stats } from '../../types/donation';
 import { StatusBadge } from '../../components/StatusBadge';
 import { StatCard } from '../../components/StatCard';
+import { ImageModal } from '../../components/ImageModal';
+import { Image as ImageIcon } from 'lucide-react';
 
 // --- Types ---
 type NgoOption = {
@@ -109,6 +111,7 @@ export default function NgoDashboard() {
     const [donations, setDonations] = useState<Donation[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
+    const [viewingImage, setViewingImage] = useState<string | null>(null);
 
     const loadData = async () => {
         setLoading(true);
@@ -267,6 +270,15 @@ export default function NgoDashboard() {
 
                                             {/* Actions */}
                                             <div className="flex items-center gap-2 md:self-center pt-2 md:pt-0 border-t md:border-t-0 border-stone-100 dark:border-stone-800">
+                                                {donation.imageUrl && (
+                                                    <button
+                                                        onClick={() => setViewingImage(donation.imageUrl || null)}
+                                                        className="p-2 text-stone-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors"
+                                                        title="View Image"
+                                                    >
+                                                        <ImageIcon size={20} />
+                                                    </button>
+                                                )}
                                                 {donation.status === 'PENDING_NGO_CONFIRMATION' && (
                                                     <>
                                                         <button
@@ -315,6 +327,12 @@ export default function NgoDashboard() {
                     </div>
                 </div>
             </div>
+
+            <ImageModal
+                isOpen={!!viewingImage}
+                onClose={() => setViewingImage(null)}
+                imageUrl={viewingImage || undefined}
+            />
         </div>
     );
 }

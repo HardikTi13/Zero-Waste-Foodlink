@@ -19,6 +19,7 @@ export type Donation = {
     impact?: {
         co2SavedKg: number;
     };
+    imageUrl?: string;
 };
 
 export type Stats = {

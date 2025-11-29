@@ -7,7 +7,26 @@ import {
     Leaf,
     Users,
     Utensils,
-    Sprout
+    Sprout,
+    Apple,
+    Carrot,
+    Croissant,
+    Coffee,
+    Pizza,
+    Sandwich,
+    Fish,
+    Wheat,
+    Soup,
+    Drumstick,
+    Egg,
+    Cookie,
+    Milk,
+    UtensilsCrossed,
+    Candy,
+    IceCream,
+    Banana,
+    Cherry,
+    Grape
 } from 'lucide-react';
 import { ThemeToggle } from '../components/ThemeToggle';
 
@@ -35,7 +54,7 @@ export default function LandingPage() {
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
                         <button
-                            onClick={() => handleNavigate('SIGNUP')}
+                            onClick={() => handleNavigate('LOGIN')}
                             className="px-6 py-2.5 text-sm font-semibold bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 hover:-translate-y-0.5"
                         >
                             Get Started
@@ -52,18 +71,50 @@ export default function LandingPage() {
                     <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-emerald-200/40 dark:bg-emerald-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '10s' }} />
                 </div>
 
+                {/* Full Screen Food Doodles Background */}
+                <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden z-0">
+                    {/* Top Area */}
+                    <Apple className="absolute top-[5%] left-[5%] text-stone-300 dark:text-stone-700 rotate-[-12deg] opacity-50" size={64} strokeWidth={1.5} />
+                    <Soup className="absolute top-[12%] left-[20%] text-stone-300 dark:text-stone-700 rotate-[15deg] opacity-50" size={56} strokeWidth={1.5} />
+                    <Wheat className="absolute top-[8%] right-[15%] text-stone-300 dark:text-stone-700 rotate-[45deg] opacity-50" size={52} strokeWidth={1.5} />
+                    <Carrot className="absolute top-[18%] right-[5%] text-stone-300 dark:text-stone-700 rotate-[24deg] opacity-50" size={60} strokeWidth={1.5} />
+                    <Grape className="absolute top-[5%] left-[40%] text-stone-300 dark:text-stone-700 rotate-[-10deg] opacity-40" size={40} strokeWidth={1.5} />
+
+                    {/* Upper Middle */}
+                    <Cherry className="absolute top-[25%] left-[10%] text-stone-300 dark:text-stone-700 rotate-[30deg] opacity-40" size={32} strokeWidth={1.5} />
+                    <Drumstick className="absolute top-[28%] left-[30%] text-stone-300 dark:text-stone-700 rotate-[-20deg] opacity-50" size={58} strokeWidth={1.5} />
+                    <Pizza className="absolute top-[35%] left-[-2%] text-stone-300 dark:text-stone-700 rotate-[-45deg] opacity-50" size={72} strokeWidth={1.5} />
+                    <Sandwich className="absolute top-[32%] right-[-2%] text-stone-300 dark:text-stone-700 rotate-[15deg] opacity-50" size={68} strokeWidth={1.5} />
+                    <Cookie className="absolute top-[40%] right-[15%] text-stone-300 dark:text-stone-700 rotate-[60deg] opacity-50" size={48} strokeWidth={1.5} />
+                    <Milk className="absolute top-[25%] right-[30%] text-stone-300 dark:text-stone-700 rotate-[-15deg] opacity-40" size={42} strokeWidth={1.5} />
+
+                    {/* Lower Middle */}
+                    <Fish className="absolute bottom-[40%] left-[5%] text-stone-300 dark:text-stone-700 rotate-[180deg] opacity-50" size={54} strokeWidth={1.5} />
+                    <Egg className="absolute bottom-[35%] left-[25%] text-stone-300 dark:text-stone-700 rotate-[-10deg] opacity-50" size={46} strokeWidth={1.5} />
+                    <UtensilsCrossed className="absolute top-[45%] left-[45%] text-stone-300 dark:text-stone-700 rotate-[180deg] opacity-20" size={120} strokeWidth={1} />
+                    <Candy className="absolute bottom-[45%] right-[25%] text-stone-300 dark:text-stone-700 rotate-[15deg] opacity-40" size={34} strokeWidth={1.5} />
+                    <Banana className="absolute bottom-[38%] right-[5%] text-stone-300 dark:text-stone-700 rotate-[45deg] opacity-40" size={52} strokeWidth={1.5} />
+
+                    {/* Bottom Area */}
+                    <Croissant className="absolute bottom-[15%] left-[10%] text-stone-300 dark:text-stone-700 rotate-[-30deg] opacity-50" size={64} strokeWidth={1.5} />
+                    <Coffee className="absolute bottom-[20%] right-[10%] text-stone-300 dark:text-stone-700 rotate-[12deg] opacity-50" size={50} strokeWidth={1.5} />
+                    <IceCream className="absolute bottom-[10%] right-[25%] text-stone-300 dark:text-stone-700 rotate-[-15deg] opacity-50" size={56} strokeWidth={1.5} />
+                    <Leaf className="absolute bottom-[5%] left-[40%] text-stone-300 dark:text-stone-700 rotate-[45deg] opacity-40" size={38} strokeWidth={1.5} />
+                    <Sprout className="absolute bottom-[8%] right-[45%] text-stone-300 dark:text-stone-700 rotate-[-20deg] opacity-40" size={36} strokeWidth={1.5} />
+                </div>
+
                 <div className="max-w-5xl mx-auto text-center relative z-10">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/30 text-sm text-emerald-800 dark:text-emerald-300 mb-8 font-medium">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/30 text-sm text-emerald-800 dark:text-emerald-300 mb-8 font-medium relative z-20">
                             <Sprout size={16} className="text-emerald-600 dark:text-emerald-400" />
                             Connecting Surplus to Scarcity
                         </div>
 
-                        <h1 className="text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.1] text-stone-900 dark:text-white">
+                        <h1 className="text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.1] text-stone-900 dark:text-white relative z-10">
                             Turn Excess into <br />
                             <span className="text-emerald-600 dark:text-emerald-500 relative inline-block">
                                 Impact.
@@ -80,7 +131,7 @@ export default function LandingPage() {
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                             <button
-                                onClick={() => handleNavigate('SIGNUP', 'RESTAURANT')}
+                                onClick={() => handleNavigate('LOGIN', 'RESTAURANT')}
                                 className="w-full sm:w-auto px-8 py-4 bg-stone-900 dark:bg-white hover:bg-stone-800 dark:hover:bg-stone-100 text-white dark:text-stone-900 rounded-2xl font-medium transition-all shadow-xl shadow-stone-900/20 dark:shadow-stone-100/10 flex items-center justify-center gap-3 group hover:-translate-y-1"
                             >
                                 <ChefHat size={20} />
@@ -88,7 +139,7 @@ export default function LandingPage() {
                                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                             </button>
                             <button
-                                onClick={() => handleNavigate('SIGNUP', 'NGO')}
+                                onClick={() => handleNavigate('LOGIN', 'NGO')}
                                 className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-900 dark:text-stone-100 border border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 rounded-2xl font-medium transition-all shadow-lg shadow-stone-200/50 dark:shadow-none flex items-center justify-center gap-3 group hover:-translate-y-1"
                             >
                                 <HeartHandshake size={20} className="text-emerald-600 dark:text-emerald-500" />
@@ -114,7 +165,7 @@ export default function LandingPage() {
             </section>
 
             {/* Impact Section */}
-            <section className="py-32 px-6 relative z-10 bg-white dark:bg-stone-950 transition-colors duration-300">
+            <section className="py-20 px-6 relative z-10 bg-white dark:bg-stone-950 transition-colors duration-300">
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
@@ -164,7 +215,7 @@ export default function LandingPage() {
             </section>
 
             {/* How It Works */}
-            <section id="how-it-works" className="py-32 px-6 relative overflow-hidden bg-stone-50 dark:bg-stone-950 transition-colors duration-300">
+            <section id="how-it-works" className="py-20 px-6 relative overflow-hidden bg-stone-50 dark:bg-stone-950 transition-colors duration-300">
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="text-center mb-20">
                         <h2 className="text-4xl md:text-5xl font-bold mb-6 text-stone-900 dark:text-white">How It Works</h2>

@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Outfit', 'sans-serif'],
+      },
       animation: {
         'gradient-x': 'gradient-x 15s ease infinite',
       },

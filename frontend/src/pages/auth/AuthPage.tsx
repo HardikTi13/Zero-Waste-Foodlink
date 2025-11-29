@@ -9,7 +9,27 @@ import {
     Lock,
     User,
     Loader2,
-    Leaf
+    Leaf,
+    Apple,
+    Soup,
+    Wheat,
+    Carrot,
+    Grape,
+    Cherry,
+    Drumstick,
+    Pizza,
+    Sandwich,
+    Cookie,
+    Milk,
+    Fish,
+    Egg,
+    UtensilsCrossed,
+    Candy,
+    Banana,
+    Croissant,
+    Coffee,
+    IceCream,
+    Sprout
 } from 'lucide-react';
 
 type AuthMode = 'LOGIN' | 'SIGNUP';
@@ -52,6 +72,38 @@ export default function AuthPage() {
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-200/40 dark:bg-emerald-900/20 rounded-full blur-[100px]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-200/40 dark:bg-orange-900/20 rounded-full blur-[100px]" />
+            </div>
+
+            {/* Full Screen Food Doodles Background */}
+            <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden z-0">
+                {/* Top Area */}
+                <Apple className="absolute top-[5%] left-[5%] text-stone-300 dark:text-stone-700 rotate-[-12deg] opacity-50" size={64} strokeWidth={1.5} />
+                <Soup className="absolute top-[12%] left-[20%] text-stone-300 dark:text-stone-700 rotate-[15deg] opacity-50" size={56} strokeWidth={1.5} />
+                <Wheat className="absolute top-[8%] right-[15%] text-stone-300 dark:text-stone-700 rotate-[45deg] opacity-50" size={52} strokeWidth={1.5} />
+                <Carrot className="absolute top-[18%] right-[5%] text-stone-300 dark:text-stone-700 rotate-[24deg] opacity-50" size={60} strokeWidth={1.5} />
+                <Grape className="absolute top-[5%] left-[40%] text-stone-300 dark:text-stone-700 rotate-[-10deg] opacity-40" size={40} strokeWidth={1.5} />
+
+                {/* Upper Middle */}
+                <Cherry className="absolute top-[25%] left-[10%] text-stone-300 dark:text-stone-700 rotate-[30deg] opacity-40" size={32} strokeWidth={1.5} />
+                <Drumstick className="absolute top-[28%] left-[30%] text-stone-300 dark:text-stone-700 rotate-[-20deg] opacity-50" size={58} strokeWidth={1.5} />
+                <Pizza className="absolute top-[35%] left-[-2%] text-stone-300 dark:text-stone-700 rotate-[-45deg] opacity-50" size={72} strokeWidth={1.5} />
+                <Sandwich className="absolute top-[32%] right-[-2%] text-stone-300 dark:text-stone-700 rotate-[15deg] opacity-50" size={68} strokeWidth={1.5} />
+                <Cookie className="absolute top-[40%] right-[15%] text-stone-300 dark:text-stone-700 rotate-[60deg] opacity-50" size={48} strokeWidth={1.5} />
+                <Milk className="absolute top-[25%] right-[30%] text-stone-300 dark:text-stone-700 rotate-[-15deg] opacity-40" size={42} strokeWidth={1.5} />
+
+                {/* Lower Middle */}
+                <Fish className="absolute bottom-[40%] left-[5%] text-stone-300 dark:text-stone-700 rotate-[180deg] opacity-50" size={54} strokeWidth={1.5} />
+                <Egg className="absolute bottom-[35%] left-[25%] text-stone-300 dark:text-stone-700 rotate-[-10deg] opacity-50" size={46} strokeWidth={1.5} />
+                <UtensilsCrossed className="absolute top-[45%] left-[45%] text-stone-300 dark:text-stone-700 rotate-[180deg] opacity-20" size={120} strokeWidth={1} />
+                <Candy className="absolute bottom-[45%] right-[25%] text-stone-300 dark:text-stone-700 rotate-[15deg] opacity-40" size={34} strokeWidth={1.5} />
+                <Banana className="absolute bottom-[38%] right-[5%] text-stone-300 dark:text-stone-700 rotate-[45deg] opacity-40" size={52} strokeWidth={1.5} />
+
+                {/* Bottom Area */}
+                <Croissant className="absolute bottom-[15%] left-[10%] text-stone-300 dark:text-stone-700 rotate-[-30deg] opacity-50" size={64} strokeWidth={1.5} />
+                <Coffee className="absolute bottom-[20%] right-[10%] text-stone-300 dark:text-stone-700 rotate-[12deg] opacity-50" size={50} strokeWidth={1.5} />
+                <IceCream className="absolute bottom-[10%] right-[25%] text-stone-300 dark:text-stone-700 rotate-[-15deg] opacity-50" size={56} strokeWidth={1.5} />
+                <Leaf className="absolute bottom-[5%] left-[40%] text-stone-300 dark:text-stone-700 rotate-[45deg] opacity-40" size={38} strokeWidth={1.5} />
+                <Sprout className="absolute bottom-[8%] right-[45%] text-stone-300 dark:text-stone-700 rotate-[-20deg] opacity-40" size={36} strokeWidth={1.5} />
             </div>
 
             <div className="w-full max-w-md relative z-10">

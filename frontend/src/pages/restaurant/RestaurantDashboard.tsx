@@ -13,6 +13,8 @@ import { type Donation, type Stats } from '../../types/donation';
 import { StatusBadge } from '../../components/StatusBadge';
 import { StatCard } from '../../components/StatCard';
 import CreateDonationModal from './CreateDonationModal';
+import { ImageModal } from '../../components/ImageModal';
+import { Image as ImageIcon } from 'lucide-react';
 
 // --- Mock Data ---
 const mockStats: Stats = {
@@ -64,6 +66,7 @@ export default function RestaurantDashboard() {
     const [loading, setLoading] = useState(true);
     const [donations, setDonations] = useState<Donation[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [viewingImage, setViewingImage] = useState<string | null>(null);
 
     useEffect(() => {
         // Simulate loading
@@ -192,6 +195,15 @@ export default function RestaurantDashboard() {
                                                     <div className="text-sm font-medium text-stone-700 dark:text-stone-300">{donation.ngoName}</div>
                                                 </div>
                                                 <StatusBadge status={donation.status} />
+                                                {donation.imageUrl && (
+                                                    <button
+                                                        onClick={() => setViewingImage(donation.imageUrl || null)}
+                                                        className="p-2 text-stone-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors"
+                                                        title="View Image"
+                                                    >
+                                                        <ImageIcon size={20} />
+                                                    </button>
+                                                )}
                                                 <button className="p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800">
                                                     <MoreVertical size={20} />
                                                 </button>
@@ -209,6 +221,12 @@ export default function RestaurantDashboard() {
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
                     onCreate={handleCreateDonation}
+                />
+
+                <ImageModal
+                    isOpen={!!viewingImage}
+                    onClose={() => setViewingImage(null)}
+                    imageUrl={viewingImage || undefined}
                 />
 
             </div>

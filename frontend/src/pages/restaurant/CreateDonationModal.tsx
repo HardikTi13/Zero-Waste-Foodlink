@@ -2,7 +2,9 @@ import { useState } from 'react';
 import {
     X,
     Loader2,
-    AlertCircle
+    AlertCircle,
+    Upload,
+    Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { type Donation } from '../../types/donation';
@@ -19,8 +21,20 @@ export default function CreateDonationModal({ isOpen, onClose, onCreate }: Creat
         foodType: '',
         quantity: '',
         freshness: 'Good for 24 hours',
-        notes: ''
+        notes: '',
+        image: null as string | null
     });
+
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData({ ...formData, image: reader.result as string });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -36,13 +50,14 @@ export default function CreateDonationModal({ isOpen, onClose, onCreate }: Creat
             quantityMeals: parseInt(formData.quantity) || 0,
             status: "PENDING_NGO_CONFIRMATION",
             createdAt: new Date().toISOString(),
-            impact: { co2SavedKg: (parseInt(formData.quantity) || 0) * 0.5 }
+            impact: { co2SavedKg: (parseInt(formData.quantity) || 0) * 0.5 },
+            imageUrl: formData.image || undefined
         };
 
         onCreate(newDonation);
         setIsSubmitting(false);
         onClose();
-        setFormData({ foodType: '', quantity: '', freshness: 'Good for 24 hours', notes: '' });
+        setFormData({ foodType: '', quantity: '', freshness: 'Good for 24 hours', notes: '', image: null });
     };
 
     return (
@@ -73,6 +88,37 @@ export default function CreateDonationModal({ isOpen, onClose, onCreate }: Creat
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                            {/* Image Upload */}
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-stone-700 dark:text-stone-300">Food Image (Upload for AI Analysis)</label>
+                                <div className="relative">
+                                    {formData.image ? (
+                                        <div className="relative w-full h-48 rounded-xl overflow-hidden group border border-stone-200 dark:border-stone-700">
+                                            <img src={formData.image} alt="Food preview" className="w-full h-full object-cover" />
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, image: null })}
+                                                    className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-lg"
+                                                >
+                                                    <Trash2 size={20} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-stone-300 dark:border-stone-700 rounded-xl cursor-pointer hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-all group">
+                                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                <Upload className="w-8 h-8 mb-3 text-stone-400 group-hover:text-emerald-500 transition-colors" />
+                                                <p className="text-sm text-stone-500 dark:text-stone-400">
+                                                    <span className="font-semibold">Click to upload</span> or drag and drop
+                                                </p>
+                                            </div>
+                                            <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                                        </label>
+                                    )}
+                                </div>
+                            </div>
+
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-stone-700 dark:text-stone-300">Food Type</label>
                                 <input
@@ -123,6 +169,8 @@ export default function CreateDonationModal({ isOpen, onClose, onCreate }: Creat
                                     className="w-full bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all resize-none placeholder:text-stone-400 dark:placeholder:text-stone-500"
                                 />
                             </div>
+
+
 
                             <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/50 rounded-xl p-4 flex gap-3 text-sm text-emerald-800 dark:text-emerald-300">
                                 <AlertCircle size={20} className="text-emerald-600 dark:text-emerald-500 shrink-0" />
